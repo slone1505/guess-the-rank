@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guess The Rank</title>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --red: #ff4655;
+    --red-dark: #c0303d;
+    --bg: #0f1012;
+    --bg2: #16181c;
+    --bg3: #1e2026;
+    --border: rgba(255,255,255,0.08);
+    --text: #ece8e1;
+    --muted: #9b9b9b;
+    --gold: #c89b3c;
+  }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 2rem;
+    height: 60px;
+    background: var(--bg2);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .logo {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: var(--red);
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+  .logo span { color: var(--text); }
+  nav button {
+    background: var(--red);
+    color: #fff;
+    border: none;
+    padding: 8px 20px;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: background 0.2s;
+  }
+  nav button:hover { background: var(--red-dark); }
+
+  .page { display: none; }
+  .page.active { display: block; }
+
+  /* HOME */
+  .hero {
+    text-align: center;
+    padding: 5rem 2rem 3rem;
+    background: linear-gradient(180deg, #1a0a0c 0%, var(--bg) 100%);
+  }
+  .hero h1 {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: clamp(2.5rem, 6vw, 4.5rem);
+    font-weight: 700;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    line-height: 1.1;
+  }
+  .hero h1 span { color: var(--red); }
+  .hero p { color: var(--muted); margin-top: 1rem; font-size: 1rem; }
+
+  .clips-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  .clip-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    cursor: pointer;
+    transition: border-color 0.2s, transform 0.15s;
+    overflow: hidden;
+  }
+  .clip-card:hover { border-color: var(--red); transform: translateY(-3px); }
+  .clip-thumb {
+    width: 100%;
+    aspect-ratio: 16/9;
+    background: var(--bg3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .clip-thumb video { width: 100%; height: 100%; object-fit: cover; }
+  .play-icon {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 52px; height: 52px;
+    background: rgba(255,70,85,0.9);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+  }
+  .play-icon::after {
+    content: '';
+    border: 10px solid transparent;
+    border-left: 16px solid #fff;
+    margin-left: 4px;
+  }
+  .clip-info { padding: 1rem; }
+  .clip-info h3 {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  .clip-info p { font-size: 0.8rem; color: var(--muted); margin-top: 4px; }
+  .clip-tag {
+    display: inline-block;
+    background: rgba(255,70,85,0.15);
+    color: var(--red);
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+    padding: 2px 8px;
+    text-transform: uppercase;
+    margin-top: 8px;
+  }
+
+  /* VIDEO PAGE */
+  .video-page-inner { max-width: 900px; margin: 0 auto; padding: 2rem; }
+  .back-btn {
+    background: none; border: none;
+    color: var(--muted); cursor: pointer;
+    font-size: 0.85rem;
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 600; letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 0 0 1.5rem;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .back-btn::before { content: '←'; font-size: 1.1rem; }
+  .back-btn:hover { color: var(--text); }
+  .video-wrapper {
+    width: 100%; aspect-ratio: 16/9;
+    background: #000; margin-bottom: 1.5rem;
+  }
+  .video-wrapper video { width: 100%; height: 100%; object-fit: contain; }
+  .video-title {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1.8rem; font-weight: 700;
+    letter-spacing: 2px; text-transform: uppercase;
+    margin-bottom: 0.5rem;
+  }
+  .video-desc { color: var(--muted); font-size: 0.9rem; margin-bottom: 2rem; }
+  .guess-section h2 {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1.2rem; font-weight: 600;
+    letter-spacing: 2px; text-transform: uppercase;
+    color: var(--gold); margin-bottom: 1rem;
+    border-top: 1px solid var(--border); padding-top: 1.5rem;
+  }
+  .ranks-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    gap: 0.75rem;
+  }
+  .rank-btn {
+    display: flex; flex-direction: column;
+    align-items: center; gap: 8px;
+    padding: 1rem 0.5rem;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    cursor: pointer; transition: all 0.15s;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 0.95rem; font-weight: 600;
+    letter-spacing: 1px; text-transform: uppercase;
+    color: var(--text);
+  }
+  .rank-btn:hover { border-color: var(--red); background: rgba(255,70,85,0.08); }
+  .rank-btn.correct { border-color: #4caf50; background: rgba(76,175,80,0.15); color: #4caf50; }
+  .rank-btn.wrong { border-color: var(--red); background: rgba(255,70,85,0.1); color: var(--red); }
+  .rank-btn.reveal { border-color: #4caf50; background: rgba(76,175,80,0.08); color: #4caf50; }
+  .rank-btn:disabled { cursor: default; }
+  .rank-icon {
+    width: 44px; height: 44px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.65rem; font-weight: 700; letter-spacing: 1px;
+  }
+  .result-banner {
+    margin-top: 1.5rem; padding: 1rem 1.5rem;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1.2rem; font-weight: 600;
+    letter-spacing: 1px; text-transform: uppercase;
+    display: none;
+  }
+  .result-banner.correct { background: rgba(76,175,80,0.15); border: 1px solid #4caf50; color: #4caf50; }
+  .result-banner.wrong { background: rgba(255,70,85,0.1); border: 1px solid var(--red); color: var(--red); }
+
+  /* LOGIN */
+  .login-wrap {
+    min-height: calc(100vh - 60px);
+    display: flex; align-items: center; justify-content: center;
+    padding: 2rem;
+  }
+  .login-box {
+    background: var(--bg2); border: 1px solid var(--border);
+    padding: 2.5rem; width: 100%; max-width: 380px;
+  }
+  .login-box h2 {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1.6rem; font-weight: 700;
+    letter-spacing: 2px; text-transform: uppercase;
+    margin-bottom: 0.4rem;
+  }
+  .login-box p { color: var(--muted); font-size: 0.85rem; margin-bottom: 2rem; }
+  .form-group { margin-bottom: 1.2rem; }
+  .form-group label {
+    display: block; font-size: 0.75rem; font-weight: 600;
+    letter-spacing: 1px; text-transform: uppercase;
+    color: var(--muted); margin-bottom: 6px;
+  }
+  .form-group input, .form-group select {
+    width: 100%; background: var(--bg3);
+    border: 1px solid var(--border); color: var(--text);
+    padding: 10px 12px; font-size: 0.95rem;
+    font-family: 'Inter', sans-serif; outline: none;
+    transition: border-color 0.2s;
+  }
+  .form-group input:focus, .form-group select:focus { border-color: var(--red); }
+  .form-group select { cursor: pointer; }
+  .form-group select option { background: var(--bg3); }
+  .login-submit {
+    width: 100%; background: var(--red); color: #fff;
+    border: none; padding: 12px;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1.05rem; font-weight: 700;
+    letter-spacing: 2px; cursor: pointer;
+    text-transform: uppercase; transition: background 0.2s;
+    margin-top: 0.5rem;
+  }
+  .login-submit:hover { background: var(--red-dark); }
+  .login-error { color: var(--red); font-size: 0.8rem; margin-top: 0.5rem; display: none; }
+
+  /* DASHBOARD */
+  .dashboard-inner { max-width: 900px; margin: 0 auto; padding: 2rem; }
+  .dashboard-header {
+    display: flex; align-items: center;
+    justify-content: space-between; margin-bottom: 2rem;
+  }
+  .dashboard-header h1 {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1.8rem; font-weight: 700;
+    letter-spacing: 2px; text-transform: uppercase;
+  }
+  .logout-btn {
+    background: none; border: 1px solid var(--border);
+    color: var(--muted); padding: 6px 16px;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 0.85rem; font-weight: 600;
+    letter-spacing: 1px; cursor: pointer;
+    text-transform: uppercase; transition: all 0.2s;
+  }
+  .logout-btn:hover { border-color: var(--red); color: var(--red); }
+
+  .upload-form {
+    background: var(--bg2); border: 1px solid var(--border);
+    padding: 2rem; margin-bottom: 2.5rem;
+  }
+  .upload-form h2 {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1.2rem; font-weight: 600;
+    letter-spacing: 2px; text-transform: uppercase;
+    color: var(--gold); margin-bottom: 1.5rem;
+  }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .upload-btn {
+    background: var(--red); color: #fff; border: none;
+    padding: 10px 28px;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1rem; font-weight: 700;
+    letter-spacing: 2px; cursor: pointer;
+    text-transform: uppercase; transition: background 0.2s;
+  }
+  .upload-btn:hover { background: var(--red-dark); }
+
+  .hint-box {
+    background: var(--bg3); border: 1px solid var(--border);
+    padding: 1rem 1.25rem; margin-bottom: 1.5rem;
+    font-size: 0.82rem; color: var(--muted); line-height: 1.6;
+  }
+  .hint-box strong { color: var(--gold); font-family: 'Rajdhani', sans-serif; letter-spacing: 1px; }
+  .hint-box code {
+    background: rgba(255,255,255,0.06);
+    padding: 1px 6px; border-radius: 3px;
+    color: var(--text); font-size: 0.8rem;
+  }
+
+  .clips-list h2 {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1.2rem; font-weight: 600;
+    letter-spacing: 2px; text-transform: uppercase;
+    color: var(--gold); margin-bottom: 1rem;
+  }
+  .clip-row {
+    display: flex; align-items: center;
+    justify-content: space-between;
+    background: var(--bg2); border: 1px solid var(--border);
+    padding: 1rem 1.25rem; margin-bottom: 0.6rem;
+  }
+  .clip-row-info h3 {
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 600; letter-spacing: 1px;
+    text-transform: uppercase; font-size: 1rem;
+  }
+  .clip-row-info p { font-size: 0.75rem; color: var(--muted); margin-top: 2px; }
+  .delete-btn {
+    background: none; border: 1px solid var(--border);
+    color: var(--muted); padding: 5px 14px;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 0.8rem; font-weight: 600;
+    letter-spacing: 1px; cursor: pointer;
+    text-transform: uppercase; transition: all 0.2s;
+  }
+  .delete-btn:hover { border-color: var(--red); color: var(--red); }
+  .empty-state {
+    text-align: center; padding: 3rem;
+    color: var(--muted); font-size: 0.9rem;
+    border: 1px dashed var(--border);
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo" onclick="showPage('home')">Guess<span>TheRank</span></div>
+  <button onclick="showPage('login')">Host Login</button>
+</nav>
+
+<!-- HOME -->
+<div id="page-home" class="page active">
+  <div class="hero">
+    <h1>Guess The <span>Rank</span></h1>
+    <p>Watch the clip — can you tell what rank the player is?</p>
+  </div>
+  <div class="clips-grid" id="homeClipsGrid"></div>
+  <div id="homeEmpty" class="empty-state" style="max-width:600px;margin:3rem auto;display:none;">
+    No clips added yet. The host hasn't registered any videos.
+  </div>
+</div>
+
+<!-- VIDEO PAGE -->
+<div id="page-video" class="page">
+  <div class="video-page-inner">
+    <button class="back-btn" onclick="showPage('home')">Back to all clips</button>
+    <div class="video-wrapper">
+      <video id="clipVideo" controls></video>
+    </div>
+    <div class="video-title" id="clipTitle"></div>
+    <div class="video-desc" id="clipDesc"></div>
+    <div class="guess-section">
+      <h2>What rank is this player?</h2>
+      <div class="ranks-grid" id="ranksGrid"></div>
+      <div class="result-banner" id="resultBanner"></div>
+    </div>
+  </div>
+</div>
+
+<!-- LOGIN -->
+<div id="page-login" class="page">
+  <div class="login-wrap">
+    <div class="login-box">
+      <h2>Host Login</h2>
+      <p>Access the dashboard to manage clips.</p>
+      <div class="form-group">
+        <label>Username</label>
+        <input type="text" id="loginUser" placeholder="host" />
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="loginPass" placeholder="••••••••" />
+      </div>
+      <button class="login-submit" onclick="doLogin()">Enter</button>
+      <div class="login-error" id="loginError">Incorrect credentials.</div>
+    </div>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="page-dashboard" class="page">
+  <div class="dashboard-inner">
+    <div class="dashboard-header">
+      <h1>Host Dashboard</h1>
+      <button class="logout-btn" onclick="doLogout()">Logout</button>
+    </div>
+
+    <div class="hint-box">
+      <strong>How to add a clip</strong><br>
+      1. Put your video file inside the <code>videos/</code> folder in this project.<br>
+      2. Fill in the form below with the filename exactly as it is (e.g. <code>myclip.mp4</code>).<br>
+      3. Click <strong>Add Clip</strong> — it will appear on the home page instantly.
+    </div>
+
+    <div class="upload-form">
+      <h2>Add New Clip</h2>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Clip Title</label>
+          <input type="text" id="uploadTitle" placeholder="e.g. Insane Ace on Haven" />
+        </div>
+        <div class="form-group">
+          <label>Correct Rank</label>
+          <select id="uploadRank">
+            <option value="">Select rank…</option>
+            <option value="Iron">Iron</option>
+            <option value="Bronze">Bronze</option>
+            <option value="Silver">Silver</option>
+            <option value="Gold">Gold</option>
+            <option value="Platinum">Platinum</option>
+            <option value="Diamond">Diamond</option>
+            <option value="Ascendant">Ascendant</option>
+            <option value="Immortal">Immortal</option>
+            <option value="Radiant">Radiant</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row" style="margin-top:1rem;">
+        <div class="form-group">
+          <label>Video Filename</label>
+          <input type="text" id="uploadFilename" placeholder="e.g. myclip.mp4" />
+        </div>
+        <div class="form-group">
+          <label>Description (optional)</label>
+          <input type="text" id="uploadDesc" placeholder="Short description…" />
+        </div>
+      </div>
+      <div style="margin-top:1.25rem;">
+        <button class="upload-btn" onclick="addClip()">Add Clip</button>
+      </div>
+    </div>
+
+    <div class="clips-list">
+      <h2>Registered Clips</h2>
+      <div id="dashClipsList"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const RANKS = [
+  { name: 'Iron',      color: '#8c6e5d', bg: '#2a1e1a' },
+  { name: 'Bronze',    color: '#b07543', bg: '#2a1e10' },
+  { name: 'Silver',    color: '#aab4b8', bg: '#1e2226' },
+  { name: 'Gold',      color: '#c89b3c', bg: '#26200f' },
+  { name: 'Platinum',  color: '#4eadbf', bg: '#0f2226' },
+  { name: 'Diamond',   color: '#8b6dcc', bg: '#1c1630' },
+  { name: 'Ascendant', color: '#4db896', bg: '#0f2620' },
+  { name: 'Immortal',  color: '#e05070', bg: '#260f18' },
+  { name: 'Radiant',   color: '#f8d84a', bg: '#26220a' },
+];
+
+const HOST_USER = 'host';
+// Password stored as SHA-256 hash — real password is never visible in this file
+const HOST_PASS_HASH = '4db6cd13ecd4d5a64ecde2f3267a6821b45272d19452f7581abf90412f14fd56';
+
+async function hashPassword(password) {
+  const msgBuffer = new TextEncoder().encode(password);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+// ---- CLIPS DATA ----
+// Videos live in the /videos/ folder alongside this HTML file.
+// Add entries here manually OR use the dashboard form below.
+// Format: { id, title, rank, desc, filename }
+let clips = JSON.parse(localStorage.getItem('gtr_clips') || '[]');
+
+// If you want to hardcode clips so they always appear even on a fresh browser,
+// add them to this array. Example:
+// const DEFAULT_CLIPS = [
+//   { id: 1, title: 'Bronze or Gold?', rank: 'Bronze', desc: '', filename: 'clip1.mp4' },
+//   { id: 2, title: 'Cracked or Lucky?', rank: 'Diamond', desc: 'Crazy flick', filename: 'clip2.mp4' },
+// ];
+// clips = DEFAULT_CLIPS; // ← uncomment this line to always use hardcoded clips
+
+function saveClips() {
+  localStorage.setItem('gtr_clips', JSON.stringify(clips));
+}
+
+function videoUrl(filename) {
+  return `videos/${filename}`;
+}
+
+// ---- NAVIGATION ----
+function showPage(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  if (name === 'home') renderHome();
+  if (name === 'dashboard') renderDashboard();
+}
+
+async function doLogin() {
+  const u = document.getElementById('loginUser').value.trim();
+  const p = document.getElementById('loginPass').value;
+  const hashed = await hashPassword(p);
+  if (u === HOST_USER && hashed === HOST_PASS_HASH) {
+    document.getElementById('loginError').style.display = 'none';
+    showPage('dashboard');
+  } else {
+    document.getElementById('loginError').style.display = 'block';
+  }
+}
+
+function doLogout() {
+  document.getElementById('loginUser').value = '';
+  document.getElementById('loginPass').value = '';
+  showPage('home');
+}
+
+// ---- ADD / DELETE ----
+function addClip() {
+  const title    = document.getElementById('uploadTitle').value.trim();
+  const rank     = document.getElementById('uploadRank').value;
+  const filename = document.getElementById('uploadFilename').value.trim();
+  const desc     = document.getElementById('uploadDesc').value.trim();
+
+  if (!title)    { alert('Please enter a clip title.'); return; }
+  if (!rank)     { alert('Please select the correct rank.'); return; }
+  if (!filename) { alert('Please enter the video filename.'); return; }
+
+  const clip = { id: Date.now(), title, rank, desc, filename };
+  clips.unshift(clip);
+  saveClips();
+
+  document.getElementById('uploadTitle').value = '';
+  document.getElementById('uploadRank').value = '';
+  document.getElementById('uploadFilename').value = '';
+  document.getElementById('uploadDesc').value = '';
+
+  renderDashboard();
+  alert('Clip added! Remember to push your videos/ folder to GitHub and redeploy.');
+}
+
+function deleteClip(id) {
+  if (!confirm('Remove this clip?')) return;
+  clips = clips.filter(c => c.id !== id);
+  saveClips();
+  renderDashboard();
+}
+
+// ---- HOME ----
+function renderHome() {
+  const grid  = document.getElementById('homeClipsGrid');
+  const empty = document.getElementById('homeEmpty');
+  grid.innerHTML = '';
+  if (clips.length === 0) { empty.style.display = 'block'; return; }
+  empty.style.display = 'none';
+  clips.forEach(clip => {
+    const card = document.createElement('div');
+    card.className = 'clip-card';
+    card.onclick = () => openClip(clip.id);
+    card.innerHTML = `
+      <div class="clip-thumb">
+        <video src="${videoUrl(clip.filename)}" preload="metadata" muted></video>
+        <div class="play-icon"></div>
+      </div>
+      <div class="clip-info">
+        <h3>${clip.title}</h3>
+        ${clip.desc ? `<p>${clip.desc}</p>` : ''}
+        <div class="clip-tag">Guess the rank</div>
+      </div>`;
+    grid.appendChild(card);
+  });
+}
+
+// ---- VIDEO / GUESS ----
+let currentClipId = null;
+let hasGuessed = false;
+
+function openClip(id) {
+  const clip = clips.find(c => c.id === id);
+  if (!clip) return;
+  currentClipId = id;
+  hasGuessed = false;
+
+  document.getElementById('clipVideo').src = videoUrl(clip.filename);
+  document.getElementById('clipTitle').textContent = clip.title;
+  document.getElementById('clipDesc').textContent = clip.desc || '';
+
+  const grid = document.getElementById('ranksGrid');
+  grid.innerHTML = '';
+  const banner = document.getElementById('resultBanner');
+  banner.style.display = 'none';
+  banner.className = 'result-banner';
+
+  RANKS.forEach(r => {
+    const btn = document.createElement('button');
+    btn.className = 'rank-btn';
+    btn.innerHTML = `
+      <div class="rank-icon" style="background:${r.bg};color:${r.color};border:1px solid ${r.color}33;">
+        ${r.name.slice(0,2).toUpperCase()}
+      </div>
+      ${r.name}`;
+    btn.onclick = () => guessRank(r.name, clip.rank);
+    grid.appendChild(btn);
+  });
+
+  showPage('video');
+}
+
+function guessRank(chosen, correct) {
+  if (hasGuessed) return;
+  hasGuessed = true;
+
+  document.querySelectorAll('.rank-btn').forEach(btn => {
+    const label = btn.textContent.trim().split('\n').pop().trim();
+    btn.disabled = true;
+    if (label === correct && label === chosen) btn.classList.add('correct');
+    else if (label === chosen)  btn.classList.add('wrong');
+    else if (label === correct) btn.classList.add('reveal');
+  });
+
+  const banner = document.getElementById('resultBanner');
+  if (chosen === correct) {
+    banner.textContent = '✓ Correct! That was ' + correct + '.';
+    banner.className = 'result-banner correct';
+  } else {
+    banner.textContent = '✗ Wrong! The answer was ' + correct + '.';
+    banner.className = 'result-banner wrong';
+  }
+  banner.style.display = 'block';
+}
+
+// ---- DASHBOARD ----
+function renderDashboard() {
+  const list = document.getElementById('dashClipsList');
+  list.innerHTML = '';
+  if (clips.length === 0) {
+    list.innerHTML = '<div class="empty-state">No clips registered yet.</div>';
+    return;
+  }
+  clips.forEach(clip => {
+    const row = document.createElement('div');
+    row.className = 'clip-row';
+    row.innerHTML = `
+      <div class="clip-row-info">
+        <h3>${clip.title}</h3>
+        <p>Rank: ${clip.rank} &nbsp;·&nbsp; File: ${clip.filename}</p>
+      </div>
+      <button class="delete-btn" onclick="deleteClip(${clip.id})">Remove</button>`;
+    list.appendChild(row);
+  });
+}
+
+renderHome();
+</script>
+</body>
+</html>
