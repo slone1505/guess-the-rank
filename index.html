@@ -6,7 +6,7 @@
 <title>Guess The Rank</title>
 <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
     --red: #ff4655;
@@ -31,7 +31,6 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 0 2rem;
     height: 60px;
     background: var(--bg2);
     border-bottom: 1px solid var(--border);
@@ -39,6 +38,7 @@
     top: 0;
     z-index: 100;
   }
+
   .logo {
     font-family: 'Rajdhani', sans-serif;
     font-size: 1.5rem;
@@ -53,11 +53,10 @@
   .page { display: none; }
   .page.active { display: block; }
 
-  /* HOME */
   .hero {
     text-align: center;
     padding: 5rem 2rem 3rem;
-    background: linear-gradient(180deg, #1a0a0c 0%, var(--bg) 100%);
+    background: linear-gradient(180deg, #1a0a0c, var(--bg));
   }
   .hero h1 {
     font-family: 'Rajdhani', sans-serif;
@@ -65,10 +64,9 @@
     font-weight: 700;
     letter-spacing: 4px;
     text-transform: uppercase;
-    line-height: 1.1;
   }
   .hero h1 span { color: var(--red); }
-  .hero p { color: var(--muted); margin-top: 1rem; font-size: 1rem; }
+  .hero p { color: var(--muted); margin-top: 1rem; }
 
   .clips-grid {
     display: grid;
@@ -78,25 +76,25 @@
     max-width: 1200px;
     margin: 0 auto;
   }
+
   .clip-card {
     background: var(--bg2);
     border: 1px solid var(--border);
     cursor: pointer;
-    transition: border-color 0.2s, transform 0.15s;
     overflow: hidden;
+    transition: border-color 0.2s, transform 0.15s;
   }
   .clip-card:hover { border-color: var(--red); transform: translateY(-3px); }
+
   .clip-thumb {
     width: 100%;
     aspect-ratio: 16/9;
     background: var(--bg3);
-    display: flex;
-    align-items: center;
-    justify-content: center;
     position: relative;
     overflow: hidden;
   }
   .clip-thumb video { width: 100%; height: 100%; object-fit: cover; }
+
   .play-icon {
     position: absolute;
     top: 50%; left: 50%;
@@ -115,6 +113,7 @@
     border-left: 16px solid #fff;
     margin-left: 4px;
   }
+
   .clip-info { padding: 1rem; }
   .clip-info h3 {
     font-family: 'Rajdhani', sans-serif;
@@ -130,31 +129,32 @@
     color: var(--red);
     font-size: 0.7rem;
     font-weight: 600;
-    letter-spacing: 1px;
     padding: 2px 8px;
     text-transform: uppercase;
     margin-top: 8px;
+    letter-spacing: 1px;
   }
 
-  /* VIDEO PAGE */
   .video-page-inner { max-width: 900px; margin: 0 auto; padding: 2rem; }
+
   .back-btn {
     background: none; border: none;
     color: var(--muted); cursor: pointer;
-    font-size: 0.85rem;
     font-family: 'Rajdhani', sans-serif;
-    font-weight: 600; letter-spacing: 1px;
-    text-transform: uppercase;
+    font-size: 0.85rem; font-weight: 600;
+    letter-spacing: 1px; text-transform: uppercase;
     padding: 0 0 1.5rem;
     display: flex; align-items: center; gap: 8px;
   }
   .back-btn::before { content: '←'; font-size: 1.1rem; }
   .back-btn:hover { color: var(--text); }
+
   .video-wrapper {
     width: 100%; aspect-ratio: 16/9;
     background: #000; margin-bottom: 1.5rem;
   }
   .video-wrapper video { width: 100%; height: 100%; object-fit: contain; }
+
   .video-title {
     font-family: 'Rajdhani', sans-serif;
     font-size: 1.8rem; font-weight: 700;
@@ -162,18 +162,21 @@
     margin-bottom: 0.5rem;
   }
   .video-desc { color: var(--muted); font-size: 0.9rem; margin-bottom: 2rem; }
+
   .guess-section h2 {
     font-family: 'Rajdhani', sans-serif;
-    font-size: 1.2rem; font-weight: 600;
+    font-size: 1.1rem; font-weight: 600;
     letter-spacing: 2px; text-transform: uppercase;
     color: var(--gold); margin-bottom: 1rem;
     border-top: 1px solid var(--border); padding-top: 1.5rem;
   }
+
   .ranks-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
     gap: 0.75rem;
   }
+
   .rank-btn {
     display: flex; flex-direction: column;
     align-items: center; gap: 8px;
@@ -191,11 +194,13 @@
   .rank-btn.wrong { border-color: var(--red); background: rgba(255,70,85,0.1); color: var(--red); }
   .rank-btn.reveal { border-color: #4caf50; background: rgba(76,175,80,0.08); color: #4caf50; }
   .rank-btn:disabled { cursor: default; }
+
   .rank-icon {
     width: 44px; height: 44px; border-radius: 50%;
     display: flex; align-items: center; justify-content: center;
     font-size: 0.65rem; font-weight: 700; letter-spacing: 1px;
   }
+
   .result-banner {
     margin-top: 1.5rem; padding: 1rem 1.5rem;
     font-family: 'Rajdhani', sans-serif;
@@ -205,13 +210,6 @@
   }
   .result-banner.correct { background: rgba(76,175,80,0.15); border: 1px solid #4caf50; color: #4caf50; }
   .result-banner.wrong { background: rgba(255,70,85,0.1); border: 1px solid var(--red); color: var(--red); }
-
-  .empty-state {
-    text-align: center; padding: 3rem;
-    color: var(--muted); font-size: 0.9rem;
-    border: 1px dashed var(--border);
-    max-width: 600px; margin: 3rem auto;
-  }
 </style>
 </head>
 <body>
@@ -220,29 +218,24 @@
   <div class="logo" onclick="showPage('home')">Guess<span>TheRank</span></div>
 </nav>
 
-<!-- HOME -->
 <div id="page-home" class="page active">
   <div class="hero">
     <h1>Guess The <span>Rank</span></h1>
-    <p>Watch the clip — can you tell what rank the player is?</p>
+    <p>Watch the clip and see if you can figure out what rank the player is.</p>
   </div>
   <div class="clips-grid" id="homeClipsGrid"></div>
-  <div id="homeEmpty" class="empty-state" style="display:none;">
-    No clips added yet.
-  </div>
 </div>
 
-<!-- VIDEO PAGE -->
 <div id="page-video" class="page">
   <div class="video-page-inner">
-    <button class="back-btn" onclick="showPage('home')">Back to all clips</button>
+    <button class="back-btn" onclick="showPage('home')">All clips</button>
     <div class="video-wrapper">
       <video id="clipVideo" controls></video>
     </div>
     <div class="video-title" id="clipTitle"></div>
     <div class="video-desc" id="clipDesc"></div>
     <div class="guess-section">
-      <h2>What rank is this player?</h2>
+      <h2>What rank is this?</h2>
       <div class="ranks-grid" id="ranksGrid"></div>
       <div class="result-banner" id="resultBanner"></div>
     </div>
@@ -262,22 +255,10 @@ const RANKS = [
   { name: 'Radiant',   color: '#f8d84a', bg: '#26220a' },
 ];
 
-// ============================================================
-//  ADD YOUR CLIPS HERE
-//  To add a new clip, copy one of the lines below and fill in:
-//    title    — the name shown on the card
-//    rank     — the correct rank (Iron / Bronze / Silver / Gold /
-//               Platinum / Diamond / Ascendant / Immortal / Radiant)
-//    filename — the video filename inside your videos/ folder
-//    desc     — short description, or leave as ''
-//
-//  Example:
-//  { title: 'Insane Ace', rank: 'Diamond', filename: 'ace.mp4', desc: 'Crazy flick on Bind' },
-// ============================================================
+// add your clips here
 const CLIPS = [
-  { title: 'Clip1', rank: 'Gold', filename: '2kill.mp4', desc: '' },
+  // { title: 'Clip 1', rank: 'Gold', filename: 'clip1.mp4', desc: '' },
 ];
-// ============================================================
 
 function videoUrl(f) { return `videos/${f}`; }
 
@@ -288,15 +269,12 @@ function showPage(name) {
 }
 
 function renderHome() {
-  const grid  = document.getElementById('homeClipsGrid');
-  const empty = document.getElementById('homeEmpty');
+  const grid = document.getElementById('homeClipsGrid');
   grid.innerHTML = '';
-  if (CLIPS.length === 0) { empty.style.display = 'block'; return; }
-  empty.style.display = 'none';
-  CLIPS.forEach((clip, index) => {
+  CLIPS.forEach((clip, i) => {
     const card = document.createElement('div');
     card.className = 'clip-card';
-    card.onclick = () => openClip(index);
+    card.onclick = () => openClip(i);
     card.innerHTML = `
       <div class="clip-thumb">
         <video src="${videoUrl(clip.filename)}" preload="metadata" muted></video>
@@ -313,8 +291,8 @@ function renderHome() {
 
 let hasGuessed = false;
 
-function openClip(index) {
-  const clip = CLIPS[index];
+function openClip(i) {
+  const clip = CLIPS[i];
   if (!clip) return;
   hasGuessed = false;
   document.getElementById('clipVideo').src = videoUrl(clip.filename);
@@ -329,34 +307,30 @@ function openClip(index) {
     const btn = document.createElement('button');
     btn.className = 'rank-btn';
     btn.innerHTML = `
-      <div class="rank-icon" style="background:${r.bg};color:${r.color};border:1px solid ${r.color}33;">
+      <div class="rank-icon" style="background:${r.bg};color:${r.color};border:1px solid ${r.color}33">
         ${r.name.slice(0,2).toUpperCase()}
-      </div>
-      ${r.name}`;
-    btn.onclick = () => guessRank(r.name, clip.rank);
+      </div>${r.name}`;
+    btn.onclick = () => guess(r.name, clip.rank);
     grid.appendChild(btn);
   });
   showPage('video');
 }
 
-function guessRank(chosen, correct) {
+function guess(chosen, correct) {
   if (hasGuessed) return;
   hasGuessed = true;
   document.querySelectorAll('.rank-btn').forEach(btn => {
     const label = btn.textContent.trim().split('\n').pop().trim();
     btn.disabled = true;
     if (label === correct && label === chosen) btn.classList.add('correct');
-    else if (label === chosen)  btn.classList.add('wrong');
+    else if (label === chosen) btn.classList.add('wrong');
     else if (label === correct) btn.classList.add('reveal');
   });
   const banner = document.getElementById('resultBanner');
-  if (chosen === correct) {
-    banner.textContent = '✓ Correct! That was ' + correct + '.';
-    banner.className = 'result-banner correct';
-  } else {
-    banner.textContent = '✗ Wrong! The answer was ' + correct + '.';
-    banner.className = 'result-banner wrong';
-  }
+  banner.textContent = chosen === correct
+    ? '✓ Correct! That was ' + correct + '.'
+    : '✗ Nope! It was ' + correct + '.';
+  banner.className = 'result-banner ' + (chosen === correct ? 'correct' : 'wrong');
   banner.style.display = 'block';
 }
 
